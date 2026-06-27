@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Minecraft Control Panel</title>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    text-align:center;
+    margin-top:100px;
+}
+button{
+    font-size:32px;
+    padding:20px 40px;
+    margin:10px;
+}
+</style>
+</head>
+<body>
+
+<h1>Minecraft Server</h1>
+
+<button id="start">START SERVER</button>
+<button id="stop">STOP SERVER</button>
+
+<p id="status"></p>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const OWNER = "DrFunTimes1";
+    const REPO = "startserv";
+    const TOKEN = "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";
+
+    async function runWorkflow(workflow) {
+
+        document.getElementById('status').textContent =
+            "Sending request...";
+
+        const response = await fetch(
+            `https://api.github.com/repos/${OWNER}/${REPO}/actions/workflows/${workflow}/dispatches`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${TOKEN}`,
+                    "Accept": "application/vnd.github+json",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    ref: "main"
+                })
+            }
+        );
+
+        if(response.ok) {
+            document.getElementById('status').textContent =
+                "Workflow started.";
+        } else {
+            document.getElementById('status').textContent =
+                "Failed.";
+        }
+    }
+
+    document.getElementById('start')
+        .addEventListener('click', () =>
+            runWorkflow('start-server.yml'));
+
+    document.getElementById('stop')
+        .addEventListener('click', () =>
+            runWorkflow('stop-server.yml'));
+});
+</script>
+
+</body>
+</html>
